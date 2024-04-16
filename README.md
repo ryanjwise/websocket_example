@@ -7,7 +7,7 @@ This project demonstrates a simple proof of concept for a WebSocket server built
 To get started with this project, clone the repository and install the dependencies.
 
 ```bash
-git clone https://repo-url.git
+git clone https://github.com/ryanjwise/websocket_example
 cd websocket_poc
 npm install
 ```
