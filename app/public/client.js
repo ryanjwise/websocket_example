@@ -17,7 +17,11 @@ socket.addEventListener('message', (message) => {
 
   if (messageContent.content) {
     console.log(
-      `Client: WebSocket recieved message: -> ${JSON.stringify(message.data, null, 2)}`
+      `Client: WebSocket recieved message: -> ${JSON.stringify(
+        message.data,
+        null,
+        2
+      )}`
     )
     addToFeed(messageContent)
   }
@@ -39,7 +43,21 @@ const sendMessage = (message) => {
 // Setup Click event handlers
 document.getElementById('sendMessage').onclick = () => {
   const message = document.getElementById('messageInput').value
-  sendMessage(message)
+  sendMessage({ type: 'message', content: message })
+}
+
+document.getElementById('sendDirectMessage').onclick = () => {
+  const message = document.getElementById('messageInput').value
+  const id = document.getElementById('clientId').value
+  sendMessage({ type: 'direct-message', content: message, target: id })
+}
+
+document.getElementById('newGame').onclick = () => {
+  sendMessage({ type: 'command', content: 'start-new-game' })
+}
+
+document.getElementById('refreshGames').onclick = () => {
+  sendMessage({ type: 'command', content: 'refresh-games' })
 }
 
 const messageFeed = document.getElementById('messageFeed')
@@ -52,34 +70,34 @@ const addToFeed = (message) => {
 }
 
 const showAvailableGames = (games) => {
-  const headers = ['status', 'players', 'joinable'];
-  
+  const headers = ['status', 'players', 'joinable']
+
   const gamesElement = document.getElementById('availableGames')
-  gamesElement.innerHTML = '';
+  gamesElement.innerHTML = ''
 
-  const table = document.createElement('table');
-  const header = table.createTHead();
-  const headerRow = header.insertRow();
+  const table = document.createElement('table')
+  const header = table.createTHead()
+  const headerRow = header.insertRow()
 
-  headers.forEach(headerText => {
-    const headerCell = document.createElement('th');
-    headerCell.textContent = headerText.toLocaleUpperCase();
-    headerRow.appendChild(headerCell);
-  });
+  headers.forEach((headerText) => {
+    const headerCell = document.createElement('th')
+    headerCell.textContent = headerText.toLocaleUpperCase()
+    headerRow.appendChild(headerCell)
+  })
 
-  games.forEach(game => {
-    const row = table.insertRow();
-    headers.forEach(header => {
-      const cell = row.insertCell();
-      cell.textContent = game[header];
+  games.forEach((game) => {
+    const row = table.insertRow()
+    headers.forEach((header) => {
+      const cell = row.insertCell()
+      cell.textContent = game[header]
 
-      if(header === "joinable"){
+      if (header === 'joinable') {
         cell.classList.add(game[header] ? 'joinable' : 'not-joinable')
         // TODO: Add Join button if yes
         cell.textContent = game[header] ? 'Yes' : 'No'
       }
-    });
-  });
+    })
+  })
 
   gamesElement.appendChild(table)
 }

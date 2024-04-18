@@ -11,11 +11,18 @@
   <section id="game">
     <h2>Games</h2>
     <div id="availableGames"></div>
+    <button id="newGame">New game</button>
+    <button id="refreshGames">Refresh games</button>
   </section>
+
   <section id="messaging">
     <h2>Message Feed</h2>
     <input type="text" id="messageInput" placeholder="Type a message">
-    <button id="sendMessage">Send Message</button>
+    <button id="sendMessage">Broadcast a Message</button>
+    <br>
+
+    <input type="text" id="clientId" placeholder="Type a users Id">
+    <button id="sendDirectMessage">Direct Message</button>
     <div id="messageFeed"></div>
   </section>
   <script type="module" src="./client.js"></script>
