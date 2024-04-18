@@ -9,10 +9,10 @@ socket.addEventListener('open', (event) => {
 })
 
 socket.addEventListener('message', (message) => {
-  console.log(
-    `Client: WebSocket recieved message: -> ${message.data}`
-  )
   const messageContent = JSON.parse(message.data)
+  console.log(
+    `Client: WebSocket recieved message: -> ${JSON.stringify(message.data, null, 2)}`
+  )
   addToFeed(messageContent)
 })
 
@@ -35,7 +35,7 @@ const messageFeed = document.getElementById('messageFeed')
 
 const addToFeed = (message) => {
   const messageElement = document.createElement('p')
-  messageElement.textContent = message
+  messageElement.textContent = `${message.type} -> ${message.content}`
 
   messageFeed.appendChild(messageElement)
 }

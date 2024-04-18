@@ -40,13 +40,13 @@ server.listen(port, () => {
 });
 
 function sendToClient(ws, message) {
-  ws.send(JSON.stringify(message))
+  ws.send(JSON.stringify({content: message, type: 'direct message'}))
 }
 
 function broadCast(message) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(message))
+      client.send(JSON.stringify({content: message, type: 'broadcast'}))
     }
   })
 }
