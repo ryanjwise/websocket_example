@@ -3,6 +3,7 @@ import path from 'path'
 import { WebSocket, WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import { fileURLToPath } from 'url'
+import { v4 as uuid } from 'uuid'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const port = 3000
@@ -16,18 +17,21 @@ const server = createServer(app)
 const wss = new WebSocketServer({ server })
 
 // Define websocket event handlers
-wss.on('connection', (ws) => {
-  console.log('Server: WebSocket connection established')
+wss.on('connection', (client) => {
+  client.id = uuid()
+
+  console.log(`Server: WebSocket connection established with ${client.id}`)
+  client.send(JSON.stringify({ clientId: client.id }))
   
-  ws.on('message', (message) => {
+  client.on('message', (message) => {
     message = JSON.parse(message)
-    console.log(`Server: WebSocket recieved message: -> ${JSON.stringify(message, null, 2)}`)
-    sendToClient(ws, message)
+    console.log(`Server: WebSocket recieved message from ${client.id}: -> ${JSON.stringify(message, null, 2)}`)
+    sendToClient(client, message)
     broadCast(message)
   })
   
-  ws.on('close', () => {
-    console.log('Server: WebSocket connection closed')
+  client.on('close', () => {
+    console.log(`Server: WebSocket connection closed with ${client.id}`)
   })
 })
 
@@ -39,8 +43,8 @@ server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-function sendToClient(ws, message) {
-  ws.send(JSON.stringify({content: message, type: 'direct message'}))
+function sendToClient(client, message) {
+  client.send(JSON.stringify({content: message, type: 'direct message'}))
 }
 
 function broadCast(message) {

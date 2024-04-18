@@ -10,10 +10,17 @@ socket.addEventListener('open', (event) => {
 
 socket.addEventListener('message', (message) => {
   const messageContent = JSON.parse(message.data)
-  console.log(
-    `Client: WebSocket recieved message: -> ${JSON.stringify(message.data, null, 2)}`
-  )
-  addToFeed(messageContent)
+  if (messageContent.clientId) {
+    socket.id = messageContent.clientId
+    console.log('Received ID from the server:', socket.id)
+  }
+
+  if (messageContent.content) {
+    console.log(
+      `Client: WebSocket recieved message: -> ${JSON.stringify(message.data, null, 2)}`
+    )
+    addToFeed(messageContent)
+  }
 })
 
 //Handle post events on websocket
