@@ -1,0 +1,46 @@
+#messageFeed {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+#availableGames {
+  font-family: Arial, sans-serif;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+#availableGames table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+#availableGames th,
+#availableGames td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+#availableGames th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+#availableGames tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#availableGames tr:hover {
+  background-color: #e8f8ff;
+}
+
+.joinable {
+  color: green;
+  font-weight: bold;
+}
+
+.not-joinable {
+  color: red;
+  font-weight: bold;
+}

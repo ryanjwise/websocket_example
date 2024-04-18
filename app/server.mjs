@@ -12,6 +12,10 @@ const port = 3000
 // Create HTTP server
 const app = express()
 const server = createServer(app)
+const games = [
+  {status: 'open', players: ['John Doe', 'Jane Doe'], joinable: false},
+  {status: 'open', players: ['Jane Smith'], joinable: true},
+]
 
 // Add WebsocketServer to the created HTTP server
 const wss = new WebSocketServer({ server })
@@ -21,7 +25,7 @@ wss.on('connection', (client) => {
   client.id = uuid()
 
   console.log(`Server: WebSocket connection established with ${client.id}`)
-  client.send(JSON.stringify({ clientId: client.id }))
+  client.send(JSON.stringify({ clientId: client.id, games }))
   
   client.on('message', (message) => {
     message = JSON.parse(message)

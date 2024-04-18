@@ -21,6 +21,10 @@ socket.addEventListener('message', (message) => {
     )
     addToFeed(messageContent)
   }
+
+  if (messageContent.games) {
+    showAvailableGames(messageContent.games)
+  }
 })
 
 //Handle post events on websocket
@@ -45,4 +49,37 @@ const addToFeed = (message) => {
   messageElement.textContent = `${message.type} -> ${message.content}`
 
   messageFeed.appendChild(messageElement)
+}
+
+const showAvailableGames = (games) => {
+  const headers = ['status', 'players', 'joinable'];
+  
+  const gamesElement = document.getElementById('availableGames')
+  gamesElement.innerHTML = '';
+
+  const table = document.createElement('table');
+  const header = table.createTHead();
+  const headerRow = header.insertRow();
+
+  headers.forEach(headerText => {
+    const headerCell = document.createElement('th');
+    headerCell.textContent = headerText.toLocaleUpperCase();
+    headerRow.appendChild(headerCell);
+  });
+
+  games.forEach(game => {
+    const row = table.insertRow();
+    headers.forEach(header => {
+      const cell = row.insertCell();
+      cell.textContent = game[header];
+
+      if(header === "joinable"){
+        cell.classList.add(game[header] ? 'joinable' : 'not-joinable')
+        // TODO: Add Join button if yes
+        cell.textContent = game[header] ? 'Yes' : 'No'
+      }
+    });
+  });
+
+  gamesElement.appendChild(table)
 }
