@@ -1,6 +1,6 @@
 import express from 'express'
 import path from 'path'
-import { WebSocketServer } from 'ws'
+import { WebSocket, WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import { fileURLToPath } from 'url'
 
@@ -22,6 +22,8 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     message = JSON.parse(message)
     console.log(`Server: WebSocket recieved message: -> ${JSON.stringify(message, null, 2)}`)
+    sendToClient(ws, message)
+    broadCast(message)
   })
   
   ws.on('close', () => {
@@ -36,3 +38,15 @@ app.use(express.static(path.resolve(__dirname, 'public')))
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+function sendToClient(ws, message) {
+  ws.send(JSON.stringify(message))
+}
+
+function broadCast(message) {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(message))
+    }
+  })
+}

@@ -4,12 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebSocket POC</title>
+  <style>
+    #messageFeed {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
   <h1>WebSocket Proof of Concept</h1>
   <input type="text" id="messageInput" placeholder="Type a message">
   <button id="sendMessage">Send Message</button>
-
+  <h2>Message Feed</h2>
+  <div id="messageFeed"></div>
   <script type="module" src="./client.js"></script>
 </body>
 </html>
