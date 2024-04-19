@@ -133,7 +133,8 @@ function handleCommand(client, message) {
         id: uuid(),
         status: 'open', 
         players: message.players, 
-        joinable: message.players.length != 2
+        joinable: message.players.length != 2,
+        boardSize: message.boardSize
       })
       client.send(JSON.stringify({ games }))
       client.send(JSON.stringify({ 
@@ -162,9 +163,10 @@ function joinGame(client, message) {
   if (games[gameIndex].joinable) {
     let playerInfo = message.playerInfo
     playerInfo.id = client.id
-    games[gameIndex].players.push(playerInfo)
-    games[gameIndex].joinable = games[gameIndex].players.length != 2
-    games[gameIndex].players.forEach((player) => {
+    let game = games[gameIndex]
+    game.players.push(playerInfo)
+    game.joinable = game.players.length != 2
+    game.players.forEach((player) => {
       let playerId = player.id
       if (playerId !== client.id) {
         clients[playerId].send(JSON.stringify({ content: `player: ${playerId} has joined your game!`, type: 'direct message' }))
@@ -175,7 +177,7 @@ function joinGame(client, message) {
       client.send(JSON.stringify({ 
         board: {
           action: 'create-game-board',
-          boardSize: message.boardSize // TODO - Pull this from game object we create above
+          boardSize: game.boardSize // TODO - Pull this from game object we create above
         }
       }))
     })
