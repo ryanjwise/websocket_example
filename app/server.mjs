@@ -130,7 +130,7 @@ function handleCommand(client, message) {
       client.send(JSON.stringify({ 
         board: {
           action: 'create-game-board',
-          boardSize: 3
+          boardSize: message.boardSize // TODO - Pull this from game object we create above
         }
       }))
       break

@@ -45,6 +45,18 @@
   font-weight: bold;
 }
 
+body {
+  font-size: large;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  color: blue;
+}
+
+div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 table {
   border: 0px solid;
   border-collapse: collapse;
@@ -83,4 +95,54 @@ th, td {
 
 .board-cell.available {
   background-color: rgb(255, 255, 255);
+}
+
+.board-size-listbox {
+  width: 50px;
+  height: 33px;
+  font-size: 23px;
+}
+
+.player-cell-letter {
+  resize: none;
+  text-align: center;
+  width: 35px;
+  height: 33px;
+  font-size: 23px;
+}
+
+.player-name {
+  resize: none;
+  text-align: center;
+  width: 150px;
+  height: 33px;
+  font-size: 23px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.player-cell-color {
+  width: 35px;
+  height: 35px;
+  margin-left: 10px;
+}
+
+input[type="color"] {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
+.radio-div label {
+  display: block;
+  text-align: left;
+  margin-left: 10px;
 }

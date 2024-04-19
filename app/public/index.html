@@ -13,9 +13,45 @@
   <section id="game">
     <h2>Games</h2>
     <div id="availableGames"></div>
-    <button id="newGame">New game</button>
     <button id="refreshGames">Refresh games</button>
   </section>
+
+  <div>
+    <table>
+      <tr>
+        <td align="left" width="180px">
+          <textarea class="player-name" id="player-1-name" rows="1" cols="10" maxlength="10">Player 1</textarea>
+          <div class="radio-div">
+            <label><input type="radio" id="player-1-type-computer" name="player-1-type" value="1" checked>🤖</input></label>
+            <label><input type="radio" id="player-1-type-super-computer" name="player-1-type" value="2" >⚡🤖⚡</input></label>
+            <label><input type="radio" id="player-1-type-human" name="player-1-type" value="0">Human</input></label>
+          </div>
+          <input class="player-cell-color" type="color" id="player-1-cell-color" name="player-1-cell-color" value="#ff0000" />
+          <textarea class="player-cell-letter" id="player-1-cell-letter" rows="1" cols="2" maxlength="1">X</textarea>
+        </td>
+        <td align="left" width="180px">
+          <textarea class="player-name" id="player-2-name" rows="1" cols="10" maxlength="10">Player 2</textarea>
+          <div class="radio-div">
+            <label><input type="radio" id="player-2-type-computer" name="player-2-type" value="1" checked>🤖</input></label>
+            <label><input type="radio" id="player-2-type-super-computer" name="player-2-type" value="2">⚡🤖⚡</input></label>
+            <label><input type="radio" id="player-2-type-human" name="player-2-type" value="0">Human</input></label>
+          </div>
+          <input class="player-cell-color" type="color" id="player-2-cell-color" name="player-2-cell-color" value="#00ff00">
+          <textarea class="player-cell-letter" id="player-2-cell-letter" rows="1" cols="2" maxlength="1">O</textarea>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <label for="board-size">Board Size</label>
+  <select class="board-size-listbox" id="board-size">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="7">7</option>
+    <option value="9">9</option>
+    <option value="11">11</option>
+    <option value="13">13</option>
+  </select>    
+  <button id="newGame">New game</button>  
 
   <section id="messaging">
     <h2>Message Feed</h2>

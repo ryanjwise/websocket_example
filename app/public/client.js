@@ -66,7 +66,10 @@ document.getElementById('sendDirectMessage').onclick = () => {
 }
 
 document.getElementById('newGame').onclick = () => {
-  sendMessage({ type: 'command', content: 'start-new-game' })
+  let message = getGameInfo()
+  message.type = 'command'
+  message.content = 'start-new-game'
+  sendMessage(message)
 }
 
 document.getElementById('refreshGames').onclick = () => {
@@ -170,4 +173,26 @@ const updateGameBoard = (message) => {
 const onGameBoardCellClick = (evt) => {
   let boardCell = evt.target
   console.log(`Click on ${boardCell.id}`)
+}
+
+const getGameInfo = () => {
+  return {
+    boardSize: document.getElementById('board-size').value,
+    players: [
+      {
+        name: document.getElementById('player-1-name').value,
+        isComputer: document.querySelector('input[name="player-1-type"]:checked').value > 0,
+        boardLetter: document.getElementById('player-1-cell-letter').value,
+        cellColor: document.getElementById('player-1-cell-color').value,
+        isSmart: document.querySelector('input[name="player-1-type"]:checked').value == 2,
+      },
+      {
+        name: document.getElementById('player-2-name').value,
+        isComputer: document.querySelector('input[name="player-2-type"]:checked').value > 0,
+        boardLetter: document.getElementById('player-2-cell-letter').value,
+        cellColor: document.getElementById('player-2-cell-color').value,
+        isSmart: document.querySelector('input[name="player-2-type"]:checked').value == 2,
+      },
+    ],
+  }
 }
