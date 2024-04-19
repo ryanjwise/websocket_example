@@ -18,7 +18,7 @@
 #availableGames th,
 #availableGames td {
   padding: 8px;
-  border-bottom: 1px solid #ddd;
+  border-color: black;
 }
 
 #availableGames th {
@@ -35,11 +35,6 @@
   background-color: #e8f8ff;
 }
 
-.joinable {
-  color: green;
-  font-weight: bold;
-}
-
 .not-joinable {
   color: red;
   font-weight: bold;
@@ -49,7 +44,6 @@ body {
   font-size: large;
   font-family: Arial, sans-serif;
   font-size: 18px;
-  color: blue;
 }
 
 div {
@@ -145,4 +139,14 @@ input[type="color"]::-webkit-color-swatch {
   display: block;
   text-align: left;
   margin-left: 10px;
+}
+
+.join-game-button {
+  width: 150px
+}
+
+.join-selector-listbox {
+  width: 150px;
+  height: 33px;
+  font-size: 18px;
 }

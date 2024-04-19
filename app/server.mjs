@@ -14,7 +14,8 @@ const server = createServer(app)
 //TODO: Add cleanup method when connections closed
 //TODO: Add rejoin method when old connection rejoins
 const clients = {}
-const games = [
+const games = []
+const games2 = [
   {
     id: uuid(),
     status: 'open',
@@ -125,7 +126,15 @@ function broadCast(message) {
 function handleCommand(client, message) {
   switch (message.content) {
     case 'start-new-game':
-      games.push({ status: 'open', players: [client.id], joinable: true })
+      message.players.forEach((player) => {
+        player.id = client.id
+      })
+      games.push({ 
+        id: uuid(),
+        status: 'open', 
+        players: message.players, 
+        joinable: message.players.length != 2
+      })
       client.send(JSON.stringify({ games }))
       client.send(JSON.stringify({ 
         board: {
@@ -149,16 +158,26 @@ function handleCommand(client, message) {
 }
 
 function joinGame(client, message) {
-  const gameIndex = games.findIndex((game) => game.id == message.data.gameId)
+  const gameIndex = games.findIndex((game) => game.id == message.gameId)
   if (games[gameIndex].joinable) {
-    games[gameIndex].players.push(client.id)
-    games[gameIndex].players.forEach((playerId) => {
+    let playerInfo = message.playerInfo
+    playerInfo.id = client.id
+    games[gameIndex].players.push(playerInfo)
+    games[gameIndex].joinable = games[gameIndex].players.length != 2
+    games[gameIndex].players.forEach((player) => {
+      let playerId = player.id
       if (playerId !== client.id) {
-        sendToClient(playerId, `player: ${client.id} has joined your game!`)
+        clients[playerId].send(JSON.stringify({ content: `player: ${playerId} has joined your game!`, type: 'direct message' }))
       } else {
-        sendToClient(playerId, `you have joined the game!`)
+        clients[playerId].send(JSON.stringify({ content: `you have joined the game!`, type: 'direct message' }))
       }
-      clients[playerId].send(JSON.stringify({ game: games.gameIndex }))
+      client.send(JSON.stringify({ games }))
+      client.send(JSON.stringify({ 
+        board: {
+          action: 'create-game-board',
+          boardSize: message.boardSize // TODO - Pull this from game object we create above
+        }
+      }))
     })
   } else {
     //TODO: Better error handling

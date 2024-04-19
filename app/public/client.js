@@ -103,25 +103,76 @@ const showAvailableGames = (games) => {
 
   games.forEach((game) => {
     const row = table.insertRow()
+    let gameId = ''
     headers.forEach((header) => {
       const cell = row.insertCell()
-      cell.textContent = game[header]
+      
+      if (header === 'id') {
+        gameId = cell.textContent = game[header]
+      }
+
+      if (header === 'status') {
+        cell.textContent = game[header]
+      }
 
       if (header === 'players') {
         console.log(game[header])
-        cell.textContent = game[header].map(player => ' ' + player.name + `(${player.id})`)
+        cell.innerHTML = ''
+        for (let player of game[header]) {
+          cell.innerHTML += `<p>${player.name} (${player.id})</p>`
+        }
       }
 
       if (header === 'joinable') {
-        cell.classList.add(game[header] ? 'joinable' : 'not-joinable')
-        // TODO: Add Join button if yes
-        cell.textContent = game[header] ? 'Yes' : 'No'
+        if (game['joinable']) {
+          let joinSelector = document.createElement('select')
+          joinSelector.className = 'join-selector-listbox'
+          cell.appendChild(joinSelector)          
+          let val0 = document.createElement('option')
+          val0.value = ''
+          val0.textContent = 'Join as...'
+          val0.disabled = true
+          val0.selected = true
+          joinSelector.appendChild(val0)
+          joinSelector.addEventListener("change", () => {
+            sendMessage({ 
+              type: 'command', 
+              content: 'join-game',
+              gameId,
+              playerInfo: JSON.parse(joinSelector.value)
+            })
+          });
+          joinSelector.addEventListener('focus', () => {
+            let numItems = joinSelector.length
+            for (let count = 1; count < numItems; count++) {
+              joinSelector.options[1] = null;
+            }
+            let playerInfo = null
+            if (playerInfo = getPlayerInfo(1)) {
+              let val1 = document.createElement('option')
+              val1.value = JSON.stringify(playerInfo)
+              val1.textContent = playerInfo.name
+              joinSelector.appendChild(val1)
+            }
+            if (playerInfo = getPlayerInfo(2)) {
+              let val2 = document.createElement('option')
+              val2.value = JSON.stringify(playerInfo)
+              val2.textContent = playerInfo.name
+              joinSelector.appendChild(val2)
+            }
+          })
+        } else {
+          cell.classList.add('not-joinable')
+          cell.textContent = 'No'
+        }
       }
     })
   })
 
   gamesElement.appendChild(table)
 }
+
+// TODO - add listener that updated name of add buttons
 
 const createGameBoard = (size) => {
   let table = document.createElement('table')
@@ -175,28 +226,31 @@ const onGameBoardCellClick = (evt) => {
   console.log(`Click on ${boardCell.id}`)
 }
 
+const getPlayerInfo = (playerNumber) => {
+  let playerInfo = null
+  if (document.querySelector(`input[name="player-${playerNumber}-type"]:checked`).value > -1) {
+    playerInfo = {
+      name: document.getElementById(`player-${playerNumber}-name`).value,
+      isComputer: document.querySelector(`input[name="player-${playerNumber}-type"]:checked`).value > 0,
+      character: document.getElementById(`player-${playerNumber}-cell-letter`).value,
+      colour: document.getElementById(`player-${playerNumber}-cell-color`).value,
+      isSmart: document.querySelector(`input[name="player-${playerNumber}-type"]:checked`).value == 2
+    }
+  }
+  return playerInfo
+}
+
 const getGameInfo = () => {
   let gameInfo = {
     boardSize: document.getElementById('board-size').value,
     players: []
   }
-  if (document.querySelector('input[name="player-1-type"]:checked').value > -1) {
-    gameInfo.players.push({
-      name: document.getElementById('player-1-name').value,
-      isComputer: document.querySelector('input[name="player-1-type"]:checked').value > 0,
-      boardLetter: document.getElementById('player-1-cell-letter').value,
-      cellColor: document.getElementById('player-1-cell-color').value,
-      isSmart: document.querySelector('input[name="player-1-type"]:checked').value == 2,
-    })
+  let playerInfo = null
+  if (playerInfo = getPlayerInfo(1)) {
+    gameInfo.players.push(playerInfo)
   }
-  if (document.querySelector('input[name="player-2-type"]:checked').value > -1) {
-    gameInfo.players.push({
-      name: document.getElementById('player-2-name').value,
-      isComputer: document.querySelector('input[name="player-2-type"]:checked').value > 0,
-      boardLetter: document.getElementById('player-2-cell-letter').value,
-      cellColor: document.getElementById('player-2-cell-color').value,
-      isSmart: document.querySelector('input[name="player-2-type"]:checked').value == 2,
-    })
+  if (playerInfo = getPlayerInfo(2)) {
+    gameInfo.players.push(playerInfo)
   }
   return gameInfo
 }
