@@ -83,7 +83,7 @@ const addToFeed = (message) => {
 }
 
 const showAvailableGames = (games) => {
-  const headers = ['status', 'players', 'joinable']
+  const headers = ['id', 'status', 'players', 'joinable']
 
   const gamesElement = document.getElementById('availableGames')
   gamesElement.innerHTML = ''

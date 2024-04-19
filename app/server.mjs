@@ -32,6 +32,11 @@ const games = [
         colour: '#7dcea0',
       },
     ],
+    state: [
+      ['A', 'B', 'A'],
+      ['', 'B', ''],
+      ['', 'A', ''],
+    ],
     joinable: false,
   },
   {
@@ -44,6 +49,11 @@ const games = [
         character: 'C',
         colour: '#5499c7',
       },
+    ],
+    state: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
     ],
     joinable: true,
   },
@@ -86,7 +96,6 @@ function handleMessage(client, message) {
       break
     case 'command':
       handleCommand(client, message)
-
       break
     default:
       break
