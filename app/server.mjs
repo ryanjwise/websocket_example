@@ -118,6 +118,12 @@ function handleCommand(client, message) {
     case 'start-new-game':
       games.push({ status: 'open', players: [client.id], joinable: true })
       client.send(JSON.stringify({ games }))
+      client.send(JSON.stringify({ 
+        board: {
+          action: 'create-game-board',
+          boardSize: 3
+        }
+      }))
       break
 
     case 'join-game':

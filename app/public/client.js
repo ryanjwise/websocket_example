@@ -29,6 +29,19 @@ socket.addEventListener('message', (message) => {
   if (messageContent.games) {
     showAvailableGames(messageContent.games)
   }
+
+  if (messageContent.board) {
+    switch (messageContent.board.action) {
+      case 'create-game-board': {
+        createGameBoard(messageContent.board.boardSize)
+        break
+      }
+      case 'update-game-board': {
+        updateGameBoard(message)
+        break
+      }
+    } 
+  }   
 })
 
 //Handle post events on websocket
@@ -105,4 +118,56 @@ const showAvailableGames = (games) => {
   })
 
   gamesElement.appendChild(table)
+}
+
+const createGameBoard = (size) => {
+  let table = document.createElement('table')
+  let headerRow = document.createElement('tr')
+  let deadCorner = document.createElement('th')
+  deadCorner.className = 'empty-corner-header'
+  headerRow.appendChild(deadCorner)
+
+  for (let col = 0; col < size; col++) {
+    let headerCol = document.createElement('th')
+    headerCol.className = 'top-header-cell'
+    headerCol.textContent = `${String.fromCharCode('A'.charCodeAt(0) + col)}`
+    headerRow.appendChild(headerCol)
+  }
+  table.appendChild(headerRow)
+
+  for (let row = size; row > 0; row--) {
+    let rowNode = document.createElement('tr')
+    let verticalHeader = document.createElement('th')
+    verticalHeader.textContent = row
+    verticalHeader.className = 'side-header-cell'
+    rowNode.appendChild(verticalHeader)
+
+    for (let col = 0; col < size; col++) {
+      let colNode = document.createElement('td')
+      colNode.id = `${String.fromCharCode('A'.charCodeAt(0) + col)}${row}`
+      colNode.classList.add('board-cell')
+      colNode.classList.add('available')
+      colNode.onclick = onGameBoardCellClick
+      rowNode.appendChild(colNode)
+    }
+
+    table.appendChild(rowNode)
+  }
+
+  let gameBoardTable = document.getElementById('game-board-table')
+  if (gameBoardTable) {
+    gameBoardTable.remove()
+  }
+
+  table.id = 'game-board-table'
+  document.getElementById('game-board-div').appendChild(table)
+}
+
+const updateGameBoard = (message) => {
+  console.log("TODO: updateGameBoard")
+}
+
+const onGameBoardCellClick = (evt) => {
+  let boardCell = evt.target
+  console.log(`Click on ${boardCell.id}`)
 }

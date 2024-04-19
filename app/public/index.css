@@ -44,3 +44,43 @@
   color: red;
   font-weight: bold;
 }
+
+table {
+  border: 0px solid;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-collapse: collapse;
+  border: 1px solid;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.empty-corner-header {
+  border: 0px solid;
+}
+
+.top-header-cell {
+  border: 0px solid;
+  height: 20px;
+}
+
+.side-header-cell {
+  border: 0px solid;
+  width: 20px;
+}
+
+.board-cell {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+}
+
+.board-cell:hover {
+  cursor: pointer
+}
+
+.board-cell.available {
+  background-color: rgb(255, 255, 255);
+}
