@@ -14,10 +14,40 @@ const server = createServer(app)
 //TODO: Add cleanup method when connections closed
 //TODO: Add rejoin method when old connection rejoins
 const clients = {}
-const games =[
-  { id: uuid(), status: 'open', players: ['John Doe', 'Jane Doe'], joinable: false },
-  { id: uuid(), status: 'open', players: ['Jane Smith'], joinable: true },
-] 
+const games = [
+  {
+    id: uuid(),
+    status: 'open',
+    players: [
+      {
+        id: uuid(),
+        name: 'Alice Johnson',
+        character: 'A',
+        colour: '#c39bd3',
+      },
+      {
+        id: uuid(),
+        name: 'Bob Williams',
+        character: 'B',
+        colour: '#7dcea0',
+      },
+    ],
+    joinable: false,
+  },
+  {
+    id: uuid(),
+    status: 'open',
+    players: [
+      {
+        id: uuid(),
+        name: 'Charlie Brown',
+        character: 'C',
+        colour: '#5499c7',
+      },
+    ],
+    joinable: true,
+  },
+]
 
 // Add WebsocketServer to the created HTTP server
 const wss = new WebSocketServer({ server })
@@ -90,7 +120,7 @@ function handleCommand(client, message) {
       client.send(JSON.stringify({ games }))
       break
 
-      case 'join-game':
+    case 'join-game':
       joinGame(client, message)
       break
 
@@ -103,12 +133,11 @@ function handleCommand(client, message) {
   }
 }
 
-function joinGame(client, message){
+function joinGame(client, message) {
   const gameIndex = games.findIndex((game) => game.id == message.data.gameId)
   if (games[gameIndex].joinable) {
-
     games[gameIndex].players.push(client.id)
-    games[gameIndex].players.forEach(playerId => {
+    games[gameIndex].players.forEach((playerId) => {
       if (playerId !== client.id) {
         sendToClient(playerId, `player: ${client.id} has joined your game!`)
       } else {

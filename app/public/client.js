@@ -91,6 +91,11 @@ const showAvailableGames = (games) => {
       const cell = row.insertCell()
       cell.textContent = game[header]
 
+      if (header === 'players') {
+        console.log(game[header])
+        cell.textContent = game[header].map(player => ' ' + player.name + `(${player.id})`)
+      }
+
       if (header === 'joinable') {
         cell.classList.add(game[header] ? 'joinable' : 'not-joinable')
         // TODO: Add Join button if yes
