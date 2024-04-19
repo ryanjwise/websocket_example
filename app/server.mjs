@@ -14,10 +14,10 @@ const server = createServer(app)
 //TODO: Add cleanup method when connections closed
 //TODO: Add rejoin method when old connection rejoins
 const clients = {}
-const games = [
-  { status: 'open', players: ['John Doe', 'Jane Doe'], joinable: false },
-  { status: 'open', players: ['Jane Smith'], joinable: true },
-]
+const games =[
+  { id: uuid(), status: 'open', players: ['John Doe', 'Jane Doe'], joinable: false },
+  { id: uuid(), status: 'open', players: ['Jane Smith'], joinable: true },
+] 
 
 // Add WebsocketServer to the created HTTP server
 const wss = new WebSocketServer({ server })
@@ -55,15 +55,7 @@ function handleMessage(client, message) {
       sendToClient(clients[message.target], message.content)
       break
     case 'command':
-      if (message.content == 'start-new-game') {
-        games.push({ status: 'open', players: [client.id], joinable: true })
-        client.send(JSON.stringify({ games }))
-        break
-      }
-      if (message.content == 'refresh-games') {
-        client.send(JSON.stringify({ games }))
-        break
-      }
+      handleCommand(client, message)
 
       break
     default:
@@ -89,4 +81,43 @@ function broadCast(message) {
       client.send(JSON.stringify({ content: message, type: 'broadcast' }))
     }
   })
+}
+
+function handleCommand(client, message) {
+  switch (message.content) {
+    case 'start-new-game':
+      games.push({ status: 'open', players: [client.id], joinable: true })
+      client.send(JSON.stringify({ games }))
+      break
+
+      case 'join-game':
+      joinGame(client, message)
+      break
+
+    case 'refresh-games':
+      client.send(JSON.stringify({ games }))
+      break
+    default:
+      //TODO: Better error handling
+      sendToClient(client, 'bad command')
+  }
+}
+
+function joinGame(client, message){
+  const gameIndex = games.findIndex((game) => game.id == message.data.gameId)
+  if (games[gameIndex].joinable) {
+
+    games[gameIndex].players.push(client.id)
+    games[gameIndex].players.forEach(playerId => {
+      if (playerId !== client.id) {
+        sendToClient(playerId, `player: ${client.id} has joined your game!`)
+      } else {
+        sendToClient(playerId, `you have joined the game!`)
+      }
+      clients[playerId].send(JSON.stringify({ game: games.gameIndex }))
+    })
+  } else {
+    //TODO: Better error handling
+    sendToClient(client, `Game: ${games[gameIndex].id} is not joinable`)
+  }
 }
