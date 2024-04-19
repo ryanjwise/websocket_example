@@ -108,22 +108,22 @@ th, td {
   text-align: center;
   width: 35px;
   height: 33px;
-  font-size: 23px;
+  font-size: 28px;
 }
 
 .player-name {
   resize: none;
   text-align: center;
-  width: 150px;
+  width: 170px;
   height: 33px;
-  font-size: 23px;
+  font-size: 28px;
   margin-top: 10px;
   margin-left: 10px;
 }
 
 .player-cell-color {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   margin-left: 10px;
 }
 
