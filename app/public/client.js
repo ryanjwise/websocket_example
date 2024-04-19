@@ -176,23 +176,27 @@ const onGameBoardCellClick = (evt) => {
 }
 
 const getGameInfo = () => {
-  return {
+  let gameInfo = {
     boardSize: document.getElementById('board-size').value,
-    players: [
-      {
-        name: document.getElementById('player-1-name').value,
-        isComputer: document.querySelector('input[name="player-1-type"]:checked').value > 0,
-        boardLetter: document.getElementById('player-1-cell-letter').value,
-        cellColor: document.getElementById('player-1-cell-color').value,
-        isSmart: document.querySelector('input[name="player-1-type"]:checked').value == 2,
-      },
-      {
-        name: document.getElementById('player-2-name').value,
-        isComputer: document.querySelector('input[name="player-2-type"]:checked').value > 0,
-        boardLetter: document.getElementById('player-2-cell-letter').value,
-        cellColor: document.getElementById('player-2-cell-color').value,
-        isSmart: document.querySelector('input[name="player-2-type"]:checked').value == 2,
-      },
-    ],
+    players: []
   }
+  if (document.querySelector('input[name="player-1-type"]:checked').value > -1) {
+    gameInfo.players.push({
+      name: document.getElementById('player-1-name').value,
+      isComputer: document.querySelector('input[name="player-1-type"]:checked').value > 0,
+      boardLetter: document.getElementById('player-1-cell-letter').value,
+      cellColor: document.getElementById('player-1-cell-color').value,
+      isSmart: document.querySelector('input[name="player-1-type"]:checked').value == 2,
+    })
+  }
+  if (document.querySelector('input[name="player-2-type"]:checked').value > -1) {
+    gameInfo.players.push({
+      name: document.getElementById('player-2-name').value,
+      isComputer: document.querySelector('input[name="player-2-type"]:checked').value > 0,
+      boardLetter: document.getElementById('player-2-cell-letter').value,
+      cellColor: document.getElementById('player-2-cell-color').value,
+      isSmart: document.querySelector('input[name="player-2-type"]:checked').value == 2,
+    })
+  }
+  return gameInfo
 }
