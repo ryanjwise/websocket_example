@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app/server.mjs",
+    "start": "nodemon --experimental-modules app/server.mjs",
     "lint": "eslint ./app --fix"
   },
   "keywords": [],
