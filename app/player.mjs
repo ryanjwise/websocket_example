@@ -11,6 +11,7 @@ export class Player {
       this._isComputer = playerInfo.isComputer
       this._isSmart = playerInfo.isSmart
       this._cellColor = playerInfo.cellColor
+      this._id = playerInfo.id || null
     }
   }
   get name() {
@@ -28,6 +29,10 @@ export class Player {
   get isSmart() {
     return this._isSmart
   }
+  get id() {
+    return this._id
+  }
+
   takeTurn(game) {
     if (game) {
       // TODO: Add logic here to ask the player what they want to do

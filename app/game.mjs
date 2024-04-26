@@ -9,10 +9,11 @@ export class Game {
    * @param {{name: string, boardLetter: string, isComputer: bool}} playerOneInfo Describe a player object
    * @param {{name: string, boardLetter: string, isComputer: bool}} playerTwoInfo Describe a player object
    */
-  constructor(boardSize, playerOneInfo, playerTwoInfo) {
+  constructor(id, boardSize, playerOneInfo, playerTwoInfo) {
     if (boardSize && playerOneInfo && playerTwoInfo) {
       this._board = new Board(boardSize)
       this._players = [createPlayer(playerOneInfo), createPlayer(playerTwoInfo)]
+      this._id = id
     }
     this._currentPlayerIdx = 0
   }
@@ -27,6 +28,9 @@ export class Game {
       return this._players[this._currentPlayerIdx]
     }
     return undefined
+  }
+  get id() {
+    return this._id
   }
   doPlayerTurn(x, y, player) {
     if (player) {

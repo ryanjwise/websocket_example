@@ -224,6 +224,16 @@ const updateGameBoard = (message) => {
 const onGameBoardCellClick = (evt) => {
   let boardCell = evt.target
   console.log(`Click on ${boardCell.id}`)
+  if (evt.playerWhoTookATurn) {
+    boardCell.classList.replace('available', 'selected')
+    boardCell.style.backgroundColor = evt.playerWhoTookATurn._cellColor
+    boardCell.textContent = evt.playerWhoTookATurn._boardLetter
+  } else if (boardCell.classList.replace('available', 'selected')) {
+    console.log(boardCell.id)
+    takeTurn(parseBoardCoordinates(boardCell.id))
+  } else {
+    console.log('Cell is already selected (no action taken)')
+  }
 }
 
 const getPlayerInfo = (playerNumber) => {
@@ -246,6 +256,7 @@ const getGameInfo = () => {
     players: []
   }
   let playerInfo = null
+  //TODO: Not sure why this works, but it does.
   if (playerInfo = getPlayerInfo(1)) {
     gameInfo.players.push(playerInfo)
   }
@@ -253,4 +264,24 @@ const getGameInfo = () => {
     gameInfo.players.push(playerInfo)
   }
   return gameInfo
+}
+
+function parseBoardCoordinates(coordStr) {
+  const match = coordStr.match(/^([A-Za-z]+)(\d+)$/)
+  const letters = match[1]
+  const digits = match[2]
+
+  return {
+    x: parseInt(digits, 10) - 1,
+    y: letters.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0),
+  }
+}
+
+async function takeTurn(selectedCell) {
+  const message = {
+    action: 'take-turn',
+    cell: selectedCell,
+    gameId: socket.id,
+  }
+  sendMessage({ type: 'command', content: 'take-turn', data: message })
 }

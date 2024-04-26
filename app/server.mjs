@@ -91,7 +91,7 @@ function handleCommand(client, message) {
       break
 
     case 'take-turn':
-      // takeTurn(client, message)
+      takeTurn(client, message)
       break
 
     case 'refresh-games':
@@ -117,7 +117,7 @@ function startNewGame(client, message) {
   }
   // TODO: Remove and resolve once local play working
   if (message.players.length == 2) {
-    game.game = new Game(message.boardSize, ...message.players)
+    game.game = new Game(game.id, message.boardSize, ...message.players)
   }
 
   games.push(game)
@@ -125,7 +125,8 @@ function startNewGame(client, message) {
   client.send(JSON.stringify({ 
     board: {
       action: 'create-game-board',
-      boardSize: message.boardSize // TODO - Pull this from game object we create above
+      boardSize: message.boardSize, // TODO - Pull this from game object we create above,
+      gameId: game.id,
     }
   }))
 }
@@ -159,36 +160,40 @@ function joinGame(client, message) {
   }
 }
 
-// function takeTurn(client, message) {
-//   const gameIndex = getGameIndexFromId(message.data.gameId)
-//   const currentGame = games[gameIndex]
-//   console.log(currentGame)
+function takeTurn(client, message) {
+  const cell = message.data.cell
+  const gameIndex = getGameIndexFromPlayerId(client.id)
+  // const gameIndex = getGameIndexFromId(message.data.gameId)
+  const currentGame = games[gameIndex]
 
-//   if (currentGame && (!currentGame.status || !currentGame.status.gameOver)) {
-//     const delayMS = 10
+  if (currentGame && (!currentGame.status || !currentGame.status.gameOver)) {
+    const delayMS = 10
 
-//     const playerWhoTookATurn = currentGame.game.currentPlayer
-//     if (playerWhoTookATurn.isComputer) {
-//       currentGame.status = playerWhoTookATurn.takeTurn(currentGame.game)
-//     } else if (cell && !playerWhoTookATurn.isComputer) {
-//       const { x, y } = cell
-//       currentGame.status = currentGame.game.doPlayerTurn(x, y, currentGame.game.currentPlayer)
-//     }
+    const playerWhoTookATurn = currentGame.game.currentPlayer
+    if (playerWhoTookATurn.isComputer) {
+      currentGame.status = playerWhoTookATurn.takeTurn(currentGame.game)
+    } else if (cell && !playerWhoTookATurn.isComputer) {
+      const { x, y } = cell
+      currentGame.status = currentGame.game.doPlayerTurn(x, y, currentGame.game.currentPlayer)
+    }
 
-//     let message = {
-//       action: 'update-game-board',
-//       board: currentGame.game.board,
-//       turnMessage: currentGame.status.turnMessage,
-//       statusMessage: currentGame.status.message,
-//       currentPlayer: currentGame.game.currentPlayer,
-//       playerWhoTookATurn,
-//     }
-//     setTimeout(() => {
-//       ws.send(JSON.stringify(message))
-//     }, delayMS)
-//   }
-// }
+    let message = {
+      action: 'update-game-board',
+      board: currentGame.game.board,
+      turnMessage: currentGame.status.turnMessage,
+      statusMessage: currentGame.status.message,
+      currentPlayer: currentGame.game.currentPlayer,
+      playerWhoTookATurn,
+    }
+    setTimeout(() => {
+      client.send(JSON.stringify(message))
+    }, delayMS)
+  }
+}
 
-// function getGameIndexFromId(gameId) {
-//   return games.findIndex((game) => game.id == gameId)
-// }
+function getGameIndexFromPlayerId(playerId) {
+  return games.findIndex((game) => game.players.find((player) => player.id == playerId))
+}
+function getGameIndexFromId(gameId) {
+  return games.findIndex((game) => game.id == gameId)
+}
