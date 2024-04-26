@@ -4,6 +4,7 @@ import { WebSocket, WebSocketServer } from 'ws'
 import { createServer } from 'http'
 import { fileURLToPath } from 'url'
 import { v4 as uuid } from 'uuid'
+import { Game } from './game.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const port = 3000
@@ -15,50 +16,6 @@ const server = createServer(app)
 //TODO: Add rejoin method when old connection rejoins
 const clients = {}
 const games = []
-const games2 = [
-  {
-    id: uuid(),
-    status: 'open',
-    players: [
-      {
-        id: uuid(),
-        name: 'Alice Johnson',
-        character: 'A',
-        colour: '#c39bd3',
-      },
-      {
-        id: uuid(),
-        name: 'Bob Williams',
-        character: 'B',
-        colour: '#7dcea0',
-      },
-    ],
-    state: [
-      ['A', 'B', 'A'],
-      ['', 'B', ''],
-      ['', 'A', ''],
-    ],
-    joinable: false,
-  },
-  {
-    id: uuid(),
-    status: 'open',
-    players: [
-      {
-        id: uuid(),
-        name: 'Charlie Brown',
-        character: 'C',
-        colour: '#5499c7',
-      },
-    ],
-    state: [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ],
-    joinable: true,
-  },
-]
 
 // Add WebsocketServer to the created HTTP server
 const wss = new WebSocketServer({ server })
@@ -126,27 +83,15 @@ function broadCast(message) {
 function handleCommand(client, message) {
   switch (message.content) {
     case 'start-new-game':
-      message.players.forEach((player) => {
-        player.id = client.id
-      })
-      games.push({ 
-        id: uuid(),
-        status: 'open', 
-        players: message.players, 
-        joinable: message.players.length != 2,
-        boardSize: message.boardSize
-      })
-      client.send(JSON.stringify({ games }))
-      client.send(JSON.stringify({ 
-        board: {
-          action: 'create-game-board',
-          boardSize: message.boardSize // TODO - Pull this from game object we create above
-        }
-      }))
+      startNewGame(client, message)
       break
 
     case 'join-game':
       joinGame(client, message)
+      break
+
+    case 'take-turn':
+      // takeTurn(client, message)
       break
 
     case 'refresh-games':
@@ -158,8 +103,35 @@ function handleCommand(client, message) {
   }
 }
 
+function startNewGame(client, message) {
+  message.players.forEach((player) => {
+    player.id = client.id
+  })
+
+  const game = { 
+    id: uuid(),
+    status: 'open', 
+    players: message.players, 
+    joinable: message.players.length != 2,
+    boardSize: message.boardSize,
+  }
+  // TODO: Remove and resolve once local play working
+  if (message.players.length == 2) {
+    game.game = new Game(message.boardSize, ...message.players)
+  }
+
+  games.push(game)
+  client.send(JSON.stringify({ games }))
+  client.send(JSON.stringify({ 
+    board: {
+      action: 'create-game-board',
+      boardSize: message.boardSize // TODO - Pull this from game object we create above
+    }
+  }))
+}
+
 function joinGame(client, message) {
-  const gameIndex = games.findIndex((game) => game.id == message.gameId)
+  const gameIndex = getGameIndexFromId(message.data.gameId)
   if (games[gameIndex].joinable) {
     let playerInfo = message.playerInfo
     playerInfo.id = client.id
@@ -186,3 +158,37 @@ function joinGame(client, message) {
     sendToClient(client, `Game: ${games[gameIndex].id} is not joinable`)
   }
 }
+
+// function takeTurn(client, message) {
+//   const gameIndex = getGameIndexFromId(message.data.gameId)
+//   const currentGame = games[gameIndex]
+//   console.log(currentGame)
+
+//   if (currentGame && (!currentGame.status || !currentGame.status.gameOver)) {
+//     const delayMS = 10
+
+//     const playerWhoTookATurn = currentGame.game.currentPlayer
+//     if (playerWhoTookATurn.isComputer) {
+//       currentGame.status = playerWhoTookATurn.takeTurn(currentGame.game)
+//     } else if (cell && !playerWhoTookATurn.isComputer) {
+//       const { x, y } = cell
+//       currentGame.status = currentGame.game.doPlayerTurn(x, y, currentGame.game.currentPlayer)
+//     }
+
+//     let message = {
+//       action: 'update-game-board',
+//       board: currentGame.game.board,
+//       turnMessage: currentGame.status.turnMessage,
+//       statusMessage: currentGame.status.message,
+//       currentPlayer: currentGame.game.currentPlayer,
+//       playerWhoTookATurn,
+//     }
+//     setTimeout(() => {
+//       ws.send(JSON.stringify(message))
+//     }, delayMS)
+//   }
+// }
+
+// function getGameIndexFromId(gameId) {
+//   return games.findIndex((game) => game.id == gameId)
+// }
