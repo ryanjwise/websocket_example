@@ -31,6 +31,7 @@ socket.addEventListener('message', (message) => {
   }
 
   if (messageContent.board) {
+    console.log(`Client: Received board message - ${messageContent.board.action}`)
     switch (messageContent.board.action) {
       case 'create-game-board': {
         createGameBoard(messageContent.board.boardSize)
@@ -232,12 +233,14 @@ const updateGameBoard = (message) => {
 
 const onGameBoardCellClick = (evt) => {
   let boardCell = evt.target
-  console.log(`Click on ${boardCell.id}`)
   if (evt.playerWhoTookATurn) {
     boardCell.classList.replace('available', 'selected')
     boardCell.style.backgroundColor = evt.playerWhoTookATurn._cellColor
     boardCell.textContent = evt.playerWhoTookATurn._boardLetter
-  } else if (boardCell.classList.replace('available', 'selected')) {
+    return
+  }
+  console.log(`Click on ${boardCell.id}`)
+  if (boardCell.classList.replace('available', 'selected')) {
     console.log(boardCell.id)
     takeTurn(parseBoardCoordinates(boardCell.id))
   } else {
