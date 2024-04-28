@@ -132,13 +132,16 @@ function startNewGame(client, message) {
 }
 
 function joinGame(client, message) {
-  const gameIndex = getGameIndexFromId(message.data.gameId)
+  const gameIndex = getGameIndexFromId(message.gameId)
   if (games[gameIndex].joinable) {
     let playerInfo = message.playerInfo
     playerInfo.id = client.id
     let game = games[gameIndex]
     game.players.push(playerInfo)
     game.joinable = game.players.length != 2
+    if (game.players.length == 2) {
+      game.game = new Game(game.id, game.boardSize, ...game.players)
+    }
     game.players.forEach((player) => {
       let playerId = player.id
       if (playerId !== client.id) {
