@@ -178,13 +178,13 @@ function takeTurn(client, message) {
     }
 
     let message = {
-      action: 'update-game-board',
       board: currentGame.game.board,
       turnMessage: currentGame.status.turnMessage,
       statusMessage: currentGame.status.message,
       currentPlayer: currentGame.game.currentPlayer,
       playerWhoTookATurn,
     }
+    message.board.action = 'update-game-board'
     setTimeout(() => {
       client.send(JSON.stringify(message))
     }, delayMS)

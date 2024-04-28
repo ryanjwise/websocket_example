@@ -37,7 +37,7 @@ socket.addEventListener('message', (message) => {
         break
       }
       case 'update-game-board': {
-        updateGameBoard(message)
+        updateGameBoard(messageContent)
         break
       }
     } 
@@ -218,7 +218,16 @@ const createGameBoard = (size) => {
 }
 
 const updateGameBoard = (message) => {
-  console.log("TODO: updateGameBoard")
+  let moveInfo = message.turnMessage.match(/.*placed an (\w+) at \[(\d+),(\d+)\].*/)
+  let cellX = moveInfo[2]
+  let cellY = moveInfo[3]
+  let boardCellId = `${String.fromCharCode('A'.charCodeAt(0) + Number(cellY))}${Number(cellX) + 1}`
+  let evt = {
+    id: boardCellId,
+    target: document.getElementById(boardCellId),
+    playerWhoTookATurn: message.playerWhoTookATurn,
+  }
+  onGameBoardCellClick(evt)  
 }
 
 const onGameBoardCellClick = (evt) => {

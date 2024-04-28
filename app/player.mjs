@@ -7,10 +7,10 @@ export class Player {
   constructor(playerInfo) {
     if (playerInfo) {
       this._name = playerInfo.name
-      this._boardLetter = playerInfo.boardLetter
+      this._boardLetter = playerInfo.character
       this._isComputer = playerInfo.isComputer
       this._isSmart = playerInfo.isSmart
-      this._cellColor = playerInfo.cellColor
+      this._cellColor = playerInfo.colour
       this._id = playerInfo.id || null
     }
   }
