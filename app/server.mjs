@@ -80,6 +80,12 @@ function broadCast(message) {
   })
 }
 
+function broadCastToGame(game, message) {
+  game.players.forEach((player) => {
+    clients[player.id].send(JSON.stringify(message))
+  })
+}
+
 function handleCommand(client, message) {
   switch (message.content) {
     case 'start-new-game':
@@ -189,7 +195,7 @@ function takeTurn(client, message) {
     }
     message.board.action = 'update-game-board'
     setTimeout(() => {
-      client.send(JSON.stringify(message))
+      broadCastToGame(currentGame, message)
     }, delayMS)
   }
 }
