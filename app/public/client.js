@@ -251,8 +251,8 @@ const getPlayerInfo = (playerNumber) => {
     playerInfo = {
       name: document.getElementById(`player-${playerNumber}-name`).value,
       isComputer: document.querySelector(`input[name="player-${playerNumber}-type"]:checked`).value > 0,
-      character: document.getElementById(`player-${playerNumber}-cell-letter`).value,
-      colour: document.getElementById(`player-${playerNumber}-cell-color`).value,
+      boardLetter: document.getElementById(`player-${playerNumber}-cell-letter`).value,
+      cellColor: document.getElementById(`player-${playerNumber}-cell-color`).value,
       isSmart: document.querySelector(`input[name="player-${playerNumber}-type"]:checked`).value == 2
     }
   }
