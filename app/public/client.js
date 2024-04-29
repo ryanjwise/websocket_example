@@ -1,5 +1,7 @@
 // Establish websocket connection with the given route
 const socket = new WebSocket(`ws://localhost:3000`)
+let gameId = null
+
 
 // Handle Socket events
 socket.addEventListener('open', (event) => {
@@ -37,6 +39,7 @@ socket.addEventListener('message', (message) => {
     console.log(`Client: Received board message - ${messageContent.board.action}`)
     switch (messageContent.board.action) {
       case 'create-game-board': {
+        gameId = messageContent.board.gameId
         createGameBoard(messageContent.board.boardSize)
         currentClientPlayers = []
         messageContent.board.players.forEach((player) => {
@@ -69,6 +72,7 @@ const lockBoard = (lock) => {
 //Handle post events on websocket
 const sendMessage = (message) => {
   if (socket.readyState === WebSocket.OPEN) {
+    message.gameId = gameId
     message = JSON.stringify(message)
     console.log(`Client: WebSocket transmitting message: -> ${message}`)
     socket.send(message)

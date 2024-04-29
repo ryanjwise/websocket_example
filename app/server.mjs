@@ -101,20 +101,19 @@ function broadCastGameListUpdate() {
 function broadCastGameStart(game) {
   if (game.players.length == 2) {
     broadCastToGame(game, {
-          board: {
-            action: 'create-game-board',
-            boardSize: game.boardSize,
-            gameId: game.id,
-            players: game.players,
-          },
-        })
-    }
-
-    if (game.players[0].isComputer) {
-      takeTurn(clients[game.players[0].id])
-    }
+      board: {
+        action: 'create-game-board',
+        boardSize: game.boardSize,
+        gameId: game.id,
+        players: game.players,
+      },
+    })
   }
 
+  if (game.players[0].isComputer) {
+    takeTurn(clients[game.players[0].id], { gameId: game.id })
+  }
+}
 
 function handleCommand(client, message) {
   switch (message.content) {
@@ -143,7 +142,7 @@ function startNewGame(client, message) {
 
   const game = {
     id: uuid(),
-    status: {message: 'starting', gameOver: false},
+    status: { message: 'starting', gameOver: false },
     players: message.players,
     joinable: message.players.length != 2,
     boardSize: message.boardSize,
@@ -195,11 +194,11 @@ function joinGame(client, message) {
   }
 }
 
-async function takeTurn(client, message = null) {
+async function takeTurn(client, message) {
   const cell = message?.data?.cell
-  const gameIndex = getGameIndexFromPlayerId(client.id)
-  // const gameIndex = getGameIndexFromId(message.data.gameId)
+  const gameIndex = getGameIndexFromId(message.gameId)
   const currentGame = games[gameIndex]
+  console.log(`message=${JSON.stringify(message)}`)
   const playerWhoTookATurn = currentGame.game.currentPlayer
   let nextPlayer = undefined
 
@@ -234,7 +233,7 @@ async function takeTurn(client, message = null) {
     })
 
     if (nextPlayer.isComputer) {
-      takeTurn(client, message)
+      takeTurn(client, {gameId: currentGame.id})
     }
 
     if (currentGame.status.gameOver) {
