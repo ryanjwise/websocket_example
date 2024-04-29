@@ -94,6 +94,20 @@ function broadCastGameListUpdate() {
   })
 }
 
+function broadCastCreateGameBoard(game) {
+  if (game.players.length == 2) {
+    game.players.forEach((player) => {
+      clients[player.id].send(JSON.stringify({
+        board: {
+          action: 'create-game-board',
+          boardSize: game.boardSize,
+          gameId: game.id,
+        }
+      }))
+    })
+  }
+}
+
 function handleCommand(client, message) {
   switch (message.content) {
     case 'start-new-game':
@@ -133,13 +147,7 @@ function startNewGame(client, message) {
 
   games.push(game)
   broadCastGameListUpdate()
-  client.send(JSON.stringify({ 
-    board: {
-      action: 'create-game-board',
-      boardSize: message.boardSize, // TODO - Pull this from game object we create above,
-      gameId: game.id,
-    }
-  }))
+  broadCastCreateGameBoard(game)
 }
 
 function joinGame(client, message) {
@@ -161,13 +169,8 @@ function joinGame(client, message) {
         clients[playerId].send(JSON.stringify({ content: `you have joined the game!`, type: 'direct message' }))
       }
       broadCastGameListUpdate()
-      client.send(JSON.stringify({ 
-        board: {
-          action: 'create-game-board',
-          boardSize: game.boardSize // TODO - Pull this from game object we create above
-        }
-      }))
     })
+    broadCastCreateGameBoard(game)
   } else {
     //TODO: Better error handling
     sendToClient(client, `Game: ${games[gameIndex].id} is not joinable`)
