@@ -81,8 +81,12 @@ function broadCast(message) {
 }
 
 function broadCastToGame(game, message) {
-  game.players.forEach((player) => {
-    clients[player.id].send(JSON.stringify(message))
+  const uniqePlayers = new Set(game.players.map((player) => player.id))
+  console.log(`Broadcasting to ${uniqePlayers.size} players`)
+
+  uniqePlayers.forEach((playerId) => {
+    console.log(`Broadcasting to: ${playerId}`)
+    clients[playerId].send(JSON.stringify(message))
   })
 }
 
@@ -96,25 +100,21 @@ function broadCastGameListUpdate() {
 
 function broadCastGameStart(game) {
   if (game.players.length == 2) {
-    game.players.forEach((player) => {
-      clients[player.id].send(
-        JSON.stringify({
+    broadCastToGame(game, {
           board: {
             action: 'create-game-board',
             boardSize: game.boardSize,
             gameId: game.id,
-            clientId: player.id,
             players: game.players,
           },
         })
-      )
-    })
+    }
 
     if (game.players[0].isComputer) {
       takeTurn(clients[game.players[0].id])
     }
   }
-}
+
 
 function handleCommand(client, message) {
   switch (message.content) {

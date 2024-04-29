@@ -40,7 +40,7 @@ socket.addEventListener('message', (message) => {
         createGameBoard(messageContent.board.boardSize)
         currentClientPlayers = []
         messageContent.board.players.forEach((player) => {
-          if (messageContent.board.clientId == player.id) {
+          if (socket.id == player.id) {
             currentClientPlayers.push(player.id)
           }
         })
