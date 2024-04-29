@@ -50,7 +50,11 @@ function handleMessage(client, message) {
       broadCast(message.content)
       break
     case 'direct-message':
-      sendToClient(clients[message.target], message.content)
+      if (clients[message.target]) {
+        sendToClient(clients[message.target], message.content)
+      } else {
+        sendToClient(client, `User ${message.target} not found`)
+      }
       break
     case 'command':
       handleCommand(client, message)
