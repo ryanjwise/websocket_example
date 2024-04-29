@@ -58,8 +58,12 @@ socket.addEventListener('message', (message) => {
 })
 
 const lockBoard = (lock) => {
-  console.log(`lockBoard: ${lock}`)
   boardLocked = lock
+  if (lock) {
+    document.getElementById('message-turn').textContent = 'Waiting for a player in another client...'
+  } else {
+    document.getElementById('message-turn').textContent = 'Make your move!'
+  }  
 }
 
 //Handle post events on websocket
