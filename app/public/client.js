@@ -130,7 +130,7 @@ const showAvailableGames = (games) => {
       }
 
       if (header === 'status') {
-        cell.textContent = game[header]
+        cell.textContent = game[header].message
       }
 
       if (header === 'players') {
@@ -278,6 +278,7 @@ async function updateStatusAreas(statusMessage, lockMessage = null) {
   if (lockMessage) {
     lockBoard(true)
     document.getElementById('message-turn').textContent = lockMessage
+    boardLocked = false
   }
   document.getElementById('message-status').textContent = statusMessage
 }

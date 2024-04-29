@@ -143,7 +143,7 @@ function startNewGame(client, message) {
 
   const game = {
     id: uuid(),
-    status: 'open',
+    status: {message: 'starting', gameOver: false},
     players: message.players,
     joinable: message.players.length != 2,
     boardSize: message.boardSize,
@@ -235,6 +235,11 @@ async function takeTurn(client, message = null) {
 
     if (nextPlayer.isComputer) {
       takeTurn(client, message)
+    }
+
+    if (currentGame.status.gameOver) {
+      // games[gameIndex].status = currentGame.status.message
+      broadCastGameListUpdate()
     }
   }
 }
