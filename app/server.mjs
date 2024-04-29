@@ -112,10 +112,9 @@ function broadCastGameStart(game) {
         players: game.players,
       },
     })
-  }
-
-  if (game.players[0].isComputer) {
-    takeTurn(clients[game.players[0].id], { gameId: game.id })
+    if (game.players[0].isComputer) {
+      takeTurn(clients[game.players[0].id], { gameId: game.id })
+    }
   }
 }
 
