@@ -97,16 +97,22 @@ function broadCastGameListUpdate() {
 function broadCastGameStart(game) {
   if (game.players.length == 2) {
     game.players.forEach((player) => {
-      clients[player.id].send(JSON.stringify({
-        board: {
-          action: 'create-game-board',
-          boardSize: game.boardSize,
-          gameId: game.id,
-          clientId: player.id,
-          players: game.players
-        }
-      }))
+      clients[player.id].send(
+        JSON.stringify({
+          board: {
+            action: 'create-game-board',
+            boardSize: game.boardSize,
+            gameId: game.id,
+            clientId: player.id,
+            players: game.players,
+          },
+        })
+      )
     })
+
+    if (game.players[0].isComputer) {
+      takeTurn(clients[game.players[0].id])
+    }
   }
 }
 
@@ -135,10 +141,10 @@ function startNewGame(client, message) {
     player.id = client.id
   })
 
-  const game = { 
+  const game = {
     id: uuid(),
-    status: 'open', 
-    players: message.players, 
+    status: 'open',
+    players: message.players,
     joinable: message.players.length != 2,
     boardSize: message.boardSize,
   }
@@ -166,9 +172,19 @@ function joinGame(client, message) {
     game.players.forEach((player) => {
       let playerId = player.id
       if (playerId !== client.id) {
-        clients[playerId].send(JSON.stringify({ content: `player: ${playerId} has joined your game!`, type: 'direct message' }))
+        clients[playerId].send(
+          JSON.stringify({
+            content: `player: ${playerId} has joined your game!`,
+            type: 'direct message',
+          })
+        )
       } else {
-        clients[playerId].send(JSON.stringify({ content: `you have joined the game!`, type: 'direct message' }))
+        clients[playerId].send(
+          JSON.stringify({
+            content: `you have joined the game!`,
+            type: 'direct message',
+          })
+        )
       }
       broadCastGameListUpdate()
     })
@@ -179,39 +195,54 @@ function joinGame(client, message) {
   }
 }
 
-function takeTurn(client, message) {
-  const cell = message.data.cell
+async function takeTurn(client, message = null) {
+  const cell = message?.data?.cell
   const gameIndex = getGameIndexFromPlayerId(client.id)
   // const gameIndex = getGameIndexFromId(message.data.gameId)
   const currentGame = games[gameIndex]
+  const playerWhoTookATurn = currentGame.game.currentPlayer
+  let nextPlayer = undefined
 
   if (currentGame && (!currentGame.status || !currentGame.status.gameOver)) {
     const delayMS = 10
 
-    const playerWhoTookATurn = currentGame.game.currentPlayer
     if (playerWhoTookATurn.isComputer) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
       currentGame.status = playerWhoTookATurn.takeTurn(currentGame.game)
     } else if (cell && !playerWhoTookATurn.isComputer) {
       const { x, y } = cell
-      currentGame.status = currentGame.game.doPlayerTurn(x, y, currentGame.game.currentPlayer)
+      console.log(`cell=${cell} x=${x}, y=${y}`)
+      currentGame.status = currentGame.game.doPlayerTurn(
+        x,
+        y,
+        currentGame.game.currentPlayer
+      )
     }
 
+    nextPlayer = currentGame.game.currentPlayer
     let message = {
       board: currentGame.game.board,
       turnMessage: currentGame.status.turnMessage,
       statusMessage: currentGame.status.message,
-      currentPlayer: currentGame.game.currentPlayer,
+      currentPlayer: nextPlayer,
       playerWhoTookATurn,
     }
+    console.log(message)
     message.board.action = 'update-game-board'
     setTimeout(() => {
-      broadCastToGame(currentGame, message)
-    }, delayMS)
+      broadCastToGame(currentGame, message), delayMS
+    })
+
+    if (nextPlayer.isComputer) {
+      takeTurn(client, message)
+    }
   }
 }
 
 function getGameIndexFromPlayerId(playerId) {
-  return games.findIndex((game) => game.players.find((player) => player.id == playerId))
+  return games.findIndex((game) =>
+    game.players.find((player) => player.id == playerId)
+  )
 }
 function getGameIndexFromId(gameId) {
   return games.findIndex((game) => game.id == gameId)

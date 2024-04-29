@@ -44,7 +44,7 @@ socket.addEventListener('message', (message) => {
             currentClientPlayers.push(player.id)
           }
         })
-        console.log(`Players for this client: ${currentClientPlayers}`)        
+        console.log(`Players for this client: ${currentClientPlayers}`)
         lockBoard(!currentClientPlayers.includes(messageContent.board.players[0].id))
         break
       }
@@ -53,8 +53,8 @@ socket.addEventListener('message', (message) => {
         updateGameBoard(messageContent)
         break
       }
-    } 
-  }   
+    }
+  }
 })
 
 const lockBoard = (lock) => {
@@ -63,7 +63,7 @@ const lockBoard = (lock) => {
     document.getElementById('message-turn').textContent = 'Waiting for a player in another client...'
   } else {
     document.getElementById('message-turn').textContent = 'Make your move!'
-  }  
+  }
 }
 
 //Handle post events on websocket
@@ -124,7 +124,7 @@ const showAvailableGames = (games) => {
     let gameId = ''
     headers.forEach((header) => {
       const cell = row.insertCell()
-      
+
       if (header === 'id') {
         gameId = cell.textContent = game[header]
       }
@@ -145,7 +145,7 @@ const showAvailableGames = (games) => {
         if (game['joinable']) {
           let joinSelector = document.createElement('select')
           joinSelector.className = 'join-selector-listbox'
-          cell.appendChild(joinSelector)          
+          cell.appendChild(joinSelector)
           let val0 = document.createElement('option')
           val0.value = ''
           val0.textContent = 'Join as...'
@@ -153,8 +153,8 @@ const showAvailableGames = (games) => {
           val0.selected = true
           joinSelector.appendChild(val0)
           joinSelector.addEventListener("change", () => {
-            sendMessage({ 
-              type: 'command', 
+            sendMessage({
+              type: 'command',
               content: 'join-game',
               gameId,
               playerInfo: JSON.parse(joinSelector.value)
@@ -236,16 +236,16 @@ const createGameBoard = (size) => {
 }
 
 const updateGameBoard = (message) => {
-  let moveInfo = message.turnMessage.match(/.*placed an (\w+) at \[(\d+),(\d+)\].*/)
-  let cellX = moveInfo[2]
-  let cellY = moveInfo[3]
+let moveInfo = message.turnMessage.match(/.*placed an (\w+) at \[(\d+),(\d+)\].*/)
+let cellX = moveInfo[2]
+let cellY = moveInfo[3]
   let boardCellId = `${String.fromCharCode('A'.charCodeAt(0) + Number(cellY))}${Number(cellX) + 1}`
   let evt = {
     id: boardCellId,
     target: document.getElementById(boardCellId),
     playerWhoTookATurn: message.playerWhoTookATurn,
   }
-  onGameBoardCellClick(evt)  
+  onGameBoardCellClick(evt)
 }
 
 const onGameBoardCellClick = (evt) => {
@@ -289,7 +289,6 @@ const getGameInfo = () => {
     players: []
   }
   let playerInfo = null
-  //TODO: Not sure why this works, but it does.
   if (playerInfo = getPlayerInfo(1)) {
     gameInfo.players.push(playerInfo)
   }
