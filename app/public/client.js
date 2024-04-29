@@ -8,6 +8,9 @@ socket.addEventListener('open', (event) => {
   )
 })
 
+let currentClientPlayers = []
+let boardLocked = true
+
 socket.addEventListener('message', (message) => {
   const messageContent = JSON.parse(message.data)
   if (messageContent.clientId) {
@@ -35,15 +38,29 @@ socket.addEventListener('message', (message) => {
     switch (messageContent.board.action) {
       case 'create-game-board': {
         createGameBoard(messageContent.board.boardSize)
+        currentClientPlayers = []
+        messageContent.board.players.forEach((player) => {
+          if (messageContent.board.clientId == player.id) {
+            currentClientPlayers.push(player.id)
+          }
+        })
+        console.log(`Players for this client: ${currentClientPlayers}`)        
+        lockBoard(!currentClientPlayers.includes(messageContent.board.players[0].id))
         break
       }
       case 'update-game-board': {
+        lockBoard(!currentClientPlayers.includes(messageContent.currentPlayer._id))
         updateGameBoard(messageContent)
         break
       }
     } 
   }   
 })
+
+const lockBoard = (lock) => {
+  console.log(`lockBoard: ${lock}`)
+  boardLocked = lock
+}
 
 //Handle post events on websocket
 const sendMessage = (message) => {
@@ -233,6 +250,10 @@ const onGameBoardCellClick = (evt) => {
     boardCell.classList.replace('available', 'selected')
     boardCell.style.backgroundColor = evt.playerWhoTookATurn._cellColor
     boardCell.textContent = evt.playerWhoTookATurn._boardLetter
+    return
+  }
+  if (boardLocked) {
+    console.log('Board is locked - Waiting for player in another client')
     return
   }
   console.log(`Click on ${boardCell.id}`)
