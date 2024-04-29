@@ -72,7 +72,7 @@ const lockBoard = (lock) => {
 //Handle post events on websocket
 const sendMessage = (message) => {
   if (socket.readyState === WebSocket.OPEN) {
-    message.gameId = gameId
+    message.gameId = message.gameId || gameId
     message = JSON.stringify(message)
     console.log(`Client: WebSocket transmitting message: -> ${message}`)
     socket.send(message)
