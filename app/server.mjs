@@ -86,6 +86,14 @@ function broadCastToGame(game, message) {
   })
 }
 
+function broadCastGameListUpdate() {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({ games }))
+    }
+  })
+}
+
 function handleCommand(client, message) {
   switch (message.content) {
     case 'start-new-game':
@@ -100,9 +108,6 @@ function handleCommand(client, message) {
       takeTurn(client, message)
       break
 
-    case 'refresh-games':
-      client.send(JSON.stringify({ games }))
-      break
     default:
       //TODO: Better error handling
       sendToClient(client, 'bad command')
@@ -127,7 +132,7 @@ function startNewGame(client, message) {
   }
 
   games.push(game)
-  client.send(JSON.stringify({ games }))
+  broadCastGameListUpdate()
   client.send(JSON.stringify({ 
     board: {
       action: 'create-game-board',
@@ -155,7 +160,7 @@ function joinGame(client, message) {
       } else {
         clients[playerId].send(JSON.stringify({ content: `you have joined the game!`, type: 'direct message' }))
       }
-      client.send(JSON.stringify({ games }))
+      broadCastGameListUpdate()
       client.send(JSON.stringify({ 
         board: {
           action: 'create-game-board',

@@ -73,10 +73,6 @@ document.getElementById('newGame').onclick = () => {
   sendMessage(message)
 }
 
-document.getElementById('refreshGames').onclick = () => {
-  sendMessage({ type: 'command', content: 'refresh-games' })
-}
-
 const messageFeed = document.getElementById('messageFeed')
 
 const addToFeed = (message) => {
