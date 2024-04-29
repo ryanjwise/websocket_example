@@ -233,6 +233,8 @@ const createGameBoard = (size) => {
 
   table.id = 'game-board-table'
   document.getElementById('game-board-div').appendChild(table)
+
+  updateStatusAreas('\u00A0')
 }
 
 const updateGameBoard = (message) => {
@@ -245,7 +247,10 @@ let cellY = moveInfo[3]
     target: document.getElementById(boardCellId),
     playerWhoTookATurn: message.playerWhoTookATurn,
   }
+
   onGameBoardCellClick(evt)
+  let lockMessage = message.statusMessage.includes('Win') ? "Game Over" : null
+  updateStatusAreas(message.statusMessage, lockMessage)
 }
 
 const onGameBoardCellClick = (evt) => {
@@ -267,6 +272,14 @@ const onGameBoardCellClick = (evt) => {
   } else {
     console.log('Cell is already selected (no action taken)')
   }
+}
+
+async function updateStatusAreas(statusMessage, lockMessage = null) {
+  if (lockMessage) {
+    lockBoard(true)
+    document.getElementById('message-turn').textContent = lockMessage
+  }
+  document.getElementById('message-status').textContent = statusMessage
 }
 
 const getPlayerInfo = (playerNumber) => {

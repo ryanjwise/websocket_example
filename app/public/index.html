@@ -11,6 +11,9 @@
   <div>
     <span id='message-turn'>&nbsp;</span>
   </div>
+  <div>
+    <span id='message-status'>&nbsp;</span>
+  </div>
 
   <h1>WebSocket Proof of Concept</h1>
   <section id="game">
@@ -28,7 +31,7 @@
             <label><input type="radio" id="player-1-type-computer" name="player-1-type" value="1">🤖</input></label>
             <label><input type="radio" id="player-1-type-super-computer" name="player-1-type" value="2" >⚡🤖⚡</input></label>
             <label><input type="radio" id="player-1-will-join" name="player-1-type" value="-1" checked>Will join</input></label>
-            
+
           </div>
           <input class="player-cell-color" type="color" id="player-1-cell-color" name="player-1-cell-color" value="#ff0000" />
           <textarea class="player-cell-letter" id="player-1-cell-letter" rows="1" cols="2" maxlength="1">X</textarea>
@@ -55,8 +58,8 @@
     <option value="9">9</option>
     <option value="11">11</option>
     <option value="13">13</option>
-  </select>    
-  <button id="newGame">New game</button>  
+  </select>
+  <button id="newGame">New game</button>
 
   <section id="messaging">
     <h2>Message Feed</h2>
