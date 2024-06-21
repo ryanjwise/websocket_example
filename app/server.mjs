@@ -14,10 +14,6 @@ const server = createServer(app)
 //TODO: Add cleanup method when connections closed
 //TODO: Add rejoin method when old connection rejoins
 const clients = {}
-const games = [
-  { status: 'open', players: ['John Doe', 'Jane Doe'], joinable: false },
-  { status: 'open', players: ['Jane Smith'], joinable: true },
-]
 
 // Add WebsocketServer to the created HTTP server
 const wss = new WebSocketServer({ server })
@@ -29,7 +25,7 @@ wss.on('connection', (client) => {
   clients[clientId] = client
 
   console.log(`Server: WebSocket connection established with ${client.id}`)
-  client.send(JSON.stringify({ clientId: client.id, games }))
+  client.send(JSON.stringify({ clientId: client.id, clients }))
 
   client.on('message', (message) => {
     message = JSON.parse(message)
@@ -55,16 +51,10 @@ function handleMessage(client, message) {
       sendToClient(clients[message.target], message.content)
       break
     case 'command':
-      if (message.content == 'start-new-game') {
-        games.push({ status: 'open', players: [client.id], joinable: true })
-        client.send(JSON.stringify({ games }))
+      if (message.content == 'get-users') {
+        client.send(JSON.stringify({ clients }))
         break
       }
-      if (message.content == 'refresh-games') {
-        client.send(JSON.stringify({ games }))
-        break
-      }
-
       break
     default:
       break

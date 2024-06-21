@@ -13,6 +13,7 @@ socket.addEventListener('message', (message) => {
   if (messageContent.clientId) {
     socket.id = messageContent.clientId
     console.log('Received ID from the server:', socket.id)
+    showUserId(messageContent.clientId)
   }
 
   if (messageContent.content) {
@@ -26,12 +27,13 @@ socket.addEventListener('message', (message) => {
     addToFeed(messageContent)
   }
 
-  if (messageContent.games) {
-    showAvailableGames(messageContent.games)
+  if (messageContent.clients) {
+    console.log(messageContent)
+    showAvailableUsers(messageContent.clients)
   }
 })
 
-//Handle post events on websocket
+// Handle post events on websocket
 const sendMessage = (message) => {
   if (socket.readyState === WebSocket.OPEN) {
     message = JSON.stringify(message)
@@ -52,28 +54,24 @@ document.getElementById('sendDirectMessage').onclick = () => {
   sendMessage({ type: 'direct-message', content: message, target: id })
 }
 
-document.getElementById('newGame').onclick = () => {
-  sendMessage({ type: 'command', content: 'start-new-game' })
-}
-
-document.getElementById('refreshGames').onclick = () => {
-  sendMessage({ type: 'command', content: 'refresh-games' })
+document.getElementById('refreshUsers').onclick = () => {
+  sendMessage({ type: 'command', content: 'get-users' })
 }
 
 const messageFeed = document.getElementById('messageFeed')
 
-const addToFeed = (message) => {
+function addToFeed(message) {
   const messageElement = document.createElement('p')
   messageElement.textContent = `${message.type} -> ${message.content}`
 
   messageFeed.appendChild(messageElement)
 }
 
-const showAvailableGames = (games) => {
-  const headers = ['status', 'players', 'joinable']
+function showAvailableUsers(users) {
+  const headers = ['id', 'copy']
 
-  const gamesElement = document.getElementById('availableGames')
-  gamesElement.innerHTML = ''
+  const usersElement = document.getElementById('activeUsers')
+  usersElement.innerHTML = ''
 
   const table = document.createElement('table')
   const header = table.createTHead()
@@ -84,20 +82,27 @@ const showAvailableGames = (games) => {
     headerCell.textContent = headerText.toLocaleUpperCase()
     headerRow.appendChild(headerCell)
   })
-
-  games.forEach((game) => {
+  for (const user in users) {
     const row = table.insertRow()
-    headers.forEach((header) => {
-      const cell = row.insertCell()
-      cell.textContent = game[header]
+    const cell = row.insertCell()
+    cell.textContent = user
 
-      if (header === 'joinable') {
-        cell.classList.add(game[header] ? 'joinable' : 'not-joinable')
-        // TODO: Add Join button if yes
-        cell.textContent = game[header] ? 'Yes' : 'No'
-      }
-    })
-  })
+    const copyButton = document.createElement('button')
+    copyButton.textContent = 'Copy'
+    copyButton.onclick = () => {
+      navigator.clipboard.writeText(user)
+    }
+    const copyCell = row.insertCell()
+    copyCell.appendChild(copyButton)
 
-  gamesElement.appendChild(table)
+    console.log(users[user])
+  }
+
+  usersElement.appendChild(table)
+}
+
+function showUserId(id) {
+  const idElement = document.getElementById('personalId')
+  idElement.textContent += id
+  idElement.value = id
 }

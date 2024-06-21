@@ -8,15 +8,15 @@
 </head>
 <body>
   <h1>WebSocket Proof of Concept</h1>
-  <section id="game">
-    <h2>Games</h2>
-    <div id="availableGames"></div>
-    <button id="newGame">New game</button>
-    <button id="refreshGames">Refresh games</button>
+  <section id="userList">
+    <h2>Users</h2>
+    <div id="activeUsers"></div>
+    <button id="refreshUsers">Refresh</button>
   </section>
 
   <section id="messaging">
     <h2>Message Feed</h2>
+    <p id='personalId'>Your ID: </p>
     <input type="text" id="messageInput" placeholder="Type a message">
     <button id="sendMessage">Broadcast a Message</button>
     <br>
